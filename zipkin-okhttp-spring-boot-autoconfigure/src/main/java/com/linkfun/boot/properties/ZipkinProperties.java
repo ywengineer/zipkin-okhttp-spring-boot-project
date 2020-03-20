@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import zipkin2.codec.Encoding;
+import zipkin2.codec.SpanBytesDecoder;
 
 /**
  * Description:
@@ -19,6 +20,7 @@ import zipkin2.codec.Encoding;
 @ConfigurationProperties(ZipkinConfigConstants.PREFIX)
 public class ZipkinProperties {
     private boolean enabled;
+    private String localServiceName;
     private String endpoint;
     private Encoding encoding;
     private Integer maxRequests;
@@ -26,4 +28,5 @@ public class ZipkinProperties {
     private Boolean compressionEnabled;
     private Integer messageMaxBytes;
     private Integer closeTimeoutMills;
+    private SpanBytesDecoder encoder;
 }
