@@ -19,24 +19,11 @@ import zipkin2.codec.Encoding;
 @ConfigurationProperties(ZipkinConfigConstants.PREFIX)
 public class ZipkinProperties {
     private boolean enabled;
-    private SenderProperties sender;
-    private ReporterProperties reporter;
-
-    @Getter
-    @Setter
-    public static class SenderProperties {
-        private String endpoint;
-        private Encoding encoding;
-        private Integer maxRequests;
-        private Integer connectTimeout, readTimeout, writeTimeout;
-        private Boolean compressionEnabled;
-        private Integer messageMaxBytes;
-    }
-
-
-    @Getter
-    @Setter
-    public static class ReporterProperties {
-        private Integer closeTimeoutMills;
-    }
+    private String endpoint;
+    private Encoding encoding;
+    private Integer maxRequests;
+    private Integer connectTimeout, readTimeout, writeTimeout;
+    private Boolean compressionEnabled;
+    private Integer messageMaxBytes;
+    private Integer closeTimeoutMills;
 }

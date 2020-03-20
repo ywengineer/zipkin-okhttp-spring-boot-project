@@ -1,7 +1,6 @@
 package com.linkfun.boot.autoconfigure;
 
 import java.util.Collections;
-import java.util.Objects;
 
 import brave.context.slf4j.MDCScopeDecorator;
 import brave.spring.beans.CurrentTraceContextFactoryBean;
@@ -34,18 +33,18 @@ public class ZipkinOkhttpAutoConfiguration {
 
     @Bean
     public OkHttpSenderFactoryBean sender(ZipkinProperties properties) {
-        if (Objects.isNull(properties.getSender()) || StringUtils.isEmpty(properties.getSender().getEncoding())) {
+        if (StringUtils.isEmpty(properties.getEncoding())) {
             throw new IllegalArgumentException("sender.endpoint not assigned");
         }
         OkHttpSenderFactoryBean senderFactoryBean = new OkHttpSenderFactoryBean();
-        senderFactoryBean.setEndpoint(properties.getSender().getEndpoint());
-        senderFactoryBean.setEncoding(properties.getSender().getEncoding());
-        senderFactoryBean.setMaxRequests(properties.getSender().getMaxRequests());
-        senderFactoryBean.setCompressionEnabled(properties.getSender().getCompressionEnabled());
-        senderFactoryBean.setMessageMaxBytes(properties.getSender().getMessageMaxBytes());
-        senderFactoryBean.setConnectTimeout(properties.getSender().getConnectTimeout());
-        senderFactoryBean.setReadTimeout(properties.getSender().getReadTimeout());
-        senderFactoryBean.setWriteTimeout(properties.getSender().getWriteTimeout());
+        senderFactoryBean.setEndpoint(properties.getEndpoint());
+        senderFactoryBean.setEncoding(properties.getEncoding());
+        senderFactoryBean.setMaxRequests(properties.getMaxRequests());
+        senderFactoryBean.setCompressionEnabled(properties.getCompressionEnabled());
+        senderFactoryBean.setMessageMaxBytes(properties.getMessageMaxBytes());
+        senderFactoryBean.setConnectTimeout(properties.getConnectTimeout());
+        senderFactoryBean.setReadTimeout(properties.getReadTimeout());
+        senderFactoryBean.setWriteTimeout(properties.getWriteTimeout());
         return senderFactoryBean;
     }
 
@@ -59,7 +58,7 @@ public class ZipkinOkhttpAutoConfiguration {
         AsyncReporterFactoryBean factoryBean = new AsyncReporterFactoryBean();
         factoryBean.setMetrics(inMemoryReporterMetrics());
         factoryBean.setSender((Sender) senderFactoryBean.getObject());
-        factoryBean.setCloseTimeout(Objects.isNull(zipkinProperties.getReporter()) ? null : zipkinProperties.getReporter().getCloseTimeoutMills());
+        factoryBean.setCloseTimeout(zipkinProperties.getCloseTimeoutMills());
         return factoryBean;
     }
 
