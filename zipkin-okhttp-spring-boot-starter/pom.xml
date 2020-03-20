@@ -6,11 +6,13 @@
         <artifactId>zipkin-okhttp-spring-boot</artifactId>
         <groupId>com.linkfun</groupId>
         <version>${riversion}</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>zipkin-okhttp-spring-boot-starter</artifactId>
     <version>${riversion}</version>
+    <packaging>jar</packaging>
 
     <dependencies>
         <dependency>
