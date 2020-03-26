@@ -1,3 +1,4 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   com.linkfun.boot.autoconfigure.ZipkinOkhttpAutoConfiguration,\
-  com.linkfun.boot.autoconfigure.ZipkinEndpointAutoConfiguration
+  com.linkfun.boot.autoconfigure.ZipkinEndpointAutoConfiguration,\
+  com.linkfun.boot.autoconfigure.OkhttpAutoConfiguration

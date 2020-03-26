@@ -23,8 +23,8 @@ public class ZipkinProperties {
     private String localServiceName;
     private String endpoint;
     private Encoding encoding;
-    private Integer maxRequests;
-    private Integer connectTimeout, readTimeout, writeTimeout;
+    private Integer maxRequests = 100;
+    private Integer connectTimeout = 10000, readTimeout = 5000, writeTimeout = 2000;
     private Boolean compressionEnabled;
     private Integer messageMaxBytes;
     private Integer closeTimeoutMills;
