@@ -14,6 +14,7 @@ import com.linkfun.boot.properties.ZipkinProperties;
 import okhttp3.Dispatcher;
 import okhttp3.OkHttpClient;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.web.client.RestTemplateCustomizer;
@@ -31,6 +32,7 @@ import org.springframework.util.CollectionUtils;
  * Time: 10:22
  */
 @Configuration
+@AutoConfigureAfter(ZipkinAutoConfiguration.class)
 public class OkhttpAutoConfiguration {
     private final ObjectProvider<HttpMessageConverters> messageConverters;
 
@@ -83,8 +85,7 @@ public class OkhttpAutoConfiguration {
             builder = builder.customizers(customizers);
         }
         //
-        builder.requestFactory(() -> new OkHttp3ClientHttpRequestFactory(clientBuilder.build()));
-        return builder;
+        return builder.requestFactory(() -> new OkHttp3ClientHttpRequestFactory(clientBuilder.build()));
     }
 
     static Dispatcher newDispatcher(int maxRequests) {
