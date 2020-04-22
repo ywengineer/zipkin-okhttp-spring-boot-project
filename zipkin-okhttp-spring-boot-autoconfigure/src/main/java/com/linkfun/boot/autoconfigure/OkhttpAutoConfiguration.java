@@ -15,7 +15,9 @@ import okhttp3.Dispatcher;
 import okhttp3.OkHttpClient;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
+import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.web.client.RestTemplateCustomizer;
 import org.springframework.context.annotation.Bean;
@@ -33,6 +35,7 @@ import org.springframework.util.CollectionUtils;
  */
 @Configuration
 @AutoConfigureAfter(ZipkinAutoConfiguration.class)
+@AutoConfigureBefore(RestTemplateAutoConfiguration.class)
 public class OkhttpAutoConfiguration {
     private final ObjectProvider<HttpMessageConverters> messageConverters;
 
