@@ -15,9 +15,7 @@ import okhttp3.Dispatcher;
 import okhttp3.OkHttpClient;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
-import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.web.client.RestTemplateCustomizer;
 import org.springframework.context.annotation.Bean;
@@ -35,7 +33,6 @@ import org.springframework.util.CollectionUtils;
  */
 @Configuration
 @AutoConfigureAfter(ZipkinAutoConfiguration.class)
-@AutoConfigureBefore(RestTemplateAutoConfiguration.class)
 public class OkhttpAutoConfiguration {
     private final ObjectProvider<HttpMessageConverters> messageConverters;
 
@@ -58,11 +55,11 @@ public class OkhttpAutoConfiguration {
     @Bean
     public OkHttpClient.Builder okHttpClientBuilder(HttpTracing httpTracing) {
         final ZipkinProperties properties = zipkinProperties.getObject();
+        final Dispatcher dispatcher = newDispatcher(properties.getMaxRequests());
+        httpTracing.tracing().currentTraceContext().executorService(dispatcher.executorService());
+        //
         OkHttpClient.Builder builder = new OkHttpClient.Builder()
-                .dispatcher(new Dispatcher(
-                        httpTracing.tracing().currentTraceContext()
-                                .executorService(newDispatcher(properties.getMaxRequests()).executorService())
-                ))
+                .dispatcher(dispatcher)
                 .addNetworkInterceptor(TracingInterceptor.create(httpTracing));
         if (properties.getConnectTimeout() != null) builder.connectTimeout(Duration.ofMillis(properties.getConnectTimeout()));
         if (properties.getReadTimeout() != null) builder.readTimeout(Duration.ofMillis(properties.getReadTimeout()));

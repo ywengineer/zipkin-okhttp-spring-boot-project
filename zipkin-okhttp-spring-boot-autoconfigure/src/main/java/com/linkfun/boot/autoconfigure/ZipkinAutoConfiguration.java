@@ -13,6 +13,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.util.Assert;
 import zipkin2.Span;
 import zipkin2.codec.BytesEncoder;
@@ -29,6 +31,7 @@ import zipkin2.reporter.okhttp3.OkHttpSender;
  * Date: 2020-03-20
  * Time: 10:22
  */
+@Order(Ordered.HIGHEST_PRECEDENCE)
 @Configuration
 @ConditionalOnClass(ZipkinProperties.class)
 @EnableConfigurationProperties({ZipkinProperties.class})
