@@ -3,6 +3,8 @@ package com.linkfun.boot.autoconfigure;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
+import brave.baggage.BaggageFields;
+import brave.baggage.CorrelationScopeConfig;
 import brave.context.slf4j.MDCScopeDecorator;
 import brave.propagation.CurrentTraceContext;
 import brave.spring.beans.CurrentTraceContextFactoryBean;
@@ -21,6 +23,7 @@ import zipkin2.codec.BytesEncoder;
 import zipkin2.reporter.AsyncReporter;
 import zipkin2.reporter.InMemoryReporterMetrics;
 import zipkin2.reporter.Sender;
+import zipkin2.reporter.brave.AsyncZipkinSpanHandler;
 import zipkin2.reporter.okhttp3.OkHttpSender;
 
 /**
@@ -67,16 +70,27 @@ public class ZipkinAutoConfiguration {
         return properties.getEncoder() != null ? builder.build((BytesEncoder) properties.getEncoder()) : builder.build();
     }
 
+    @Bean
+    public AsyncZipkinSpanHandler asyncZipkinSpanHandler(Sender sender,
+                                                         ZipkinProperties properties,
+                                                         InMemoryReporterMetrics reporterMetrics) {
+        final AsyncZipkinSpanHandler.Builder builder = AsyncZipkinSpanHandler.newBuilder(sender);
+        if (reporterMetrics != null) builder.metrics(reporterMetrics);
+        if (properties.getMessageMaxBytes() != null) builder.messageMaxBytes(properties.getMessageMaxBytes());
+        if (properties.getCloseTimeoutMills() != null) builder.closeTimeout(properties.getCloseTimeoutMills(), TimeUnit.MILLISECONDS);
+        return builder.build();
+    }
+
     @Bean("tracing")
     public TracingFactoryBean tracing(
-            AsyncReporter<Span> asyncReporter,
+            ObjectProvider<AsyncZipkinSpanHandler> spanHandlers,
             ObjectProvider<CurrentTraceContext> currentTraceContext,
-            ZipkinProperties properties) throws Exception {
+            ZipkinProperties properties) {
         ///////////
         Assert.hasText(properties.getLocalServiceName(), "zipkin's localServiceName not assigned");
         TracingFactoryBean factoryBean = new TracingFactoryBean();
         factoryBean.setLocalServiceName(properties.getLocalServiceName());
-        factoryBean.setSpanReporter(asyncReporter);
+        factoryBean.setSpanHandlers(Collections.singletonList(spanHandlers.getObject()));
         factoryBean.setCurrentTraceContext(currentTraceContext.getObject());
         return factoryBean;
     }
@@ -84,7 +98,13 @@ public class ZipkinAutoConfiguration {
     @Bean
     public CurrentTraceContextFactoryBean currentTraceContextFactoryBean() {
         final CurrentTraceContextFactoryBean traceContextFactoryBean = new CurrentTraceContextFactoryBean();
-        traceContextFactoryBean.setScopeDecorators(Collections.singletonList(MDCScopeDecorator.create()));
+        traceContextFactoryBean.setScopeDecorators(Collections.singletonList(MDCScopeDecorator.newBuilder()
+                .clear()
+                .add(CorrelationScopeConfig.SingleCorrelationField.create(BaggageFields.TRACE_ID))
+                .add(CorrelationScopeConfig.SingleCorrelationField.create(BaggageFields.PARENT_ID))
+                .add(CorrelationScopeConfig.SingleCorrelationField.create(BaggageFields.SPAN_ID))
+                .add(CorrelationScopeConfig.SingleCorrelationField.create(BaggageFields.SAMPLED))
+                .build()));
         return traceContextFactoryBean;
     }
 }

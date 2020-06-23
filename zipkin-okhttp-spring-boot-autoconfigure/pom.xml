@@ -5,14 +5,14 @@
     <parent>
         <artifactId>zipkin-okhttp-spring-boot</artifactId>
         <groupId>com.linkfun</groupId>
-        <version>2.12.1</version>
+        <version>2.15.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>zipkin-okhttp-spring-boot-autoconfigure</artifactId>
-    <version>2.12.1</version>
+    <version>2.15.0</version>
     <packaging>jar</packaging>
 
     <dependencies>
@@ -34,6 +34,12 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                    <groupId>org.springframework.boot</groupId>
+                </exclusion>
+            </exclusions>
             <optional>true</optional>
         </dependency>
         <dependency>
